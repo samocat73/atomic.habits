@@ -1,4 +1,3 @@
-from datetime import timedelta
 
 from rest_framework import serializers
 

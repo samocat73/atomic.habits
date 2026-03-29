@@ -47,7 +47,6 @@ class HabitTests(APITestCase):
     def test_habit_retrieve(self):
         url = reverse("habit_tracker:habit-detail", args=(self.habit.pk,))
         response = self.client.get(url)
-        data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_habit_create(self):
