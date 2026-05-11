@@ -1,35 +1,43 @@
-# API сервис для трекера привычек.
-## Сервис предназначен для хранения информации о привычке в PostgreSQL. Позволяет регистрироваться пользователям в системе и работать с трекером привычек. Присутствует интеграция с Telegram для рассылки уведомлений.
-
-## Шаги по размещению проекта на виртуальной машине
-### Шаг 1. Установка необходимого ПО на машину
-**Выполните команды для бновление системы**
-```angular2html
-sudo apt update
-sudo apt upgrade
+# Трекер привычек
+## API сервис управления привычками на Django/DRF. Интегрирован с Telegram.
+## Полное описание всех реализованных эндпоинтов доступно в [документации по проекту](http://127.0.0.1:8000/redoc/).
+## О моделях:
+### Реализована модель Habit для хранения информации о привычках. Эта модель связана с моделью User через поле user. Так же эта модель ссылается на саму себя в поле related_habit. Это нужно для разделения типов привычек по тех. заданию.
+## О интеграции:
+### Для интеграции с Telegram использовалось официальное API. Реализован запрос по эндпоинту:
+```commandline
+requests.get(
+        f"https://api.telegram.org/bot{settings.BOT_TOKEN}/sendMessage", params=params
+    )
 ```
-**Установите Docker. Подробная инструкция по ссылке:**
-**https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository**
-
-**Настройте файервол**
-```angular2html
-sudo ufw enable
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw allow 22/tcp
+## О периодических и фоновых задачах:
+### Celery используется в фоновой задаче по отправке сообщения в telegram.
+### Celery Beat используется для периодической задачи для отслеживания времени напоминания.
+## О деплое:
+### Приложение и его зависимости запущены в контейнерах с помощью Docker. Оркестрация выполнена через Docker Compose.
+## Технологии
+**Django, djangorestframework, celery, redis, django-celery-beat, requests, django-cors-headers, drf-yasg, djangorestframework_simplejwt==5.5.1, docker, docker-compose**
+## Инструкции по запуску
+### Клонирование репозитория:
+```commandline
+https://github.com/samocat73/atomic.habits.git
 ```
-**Установите Git**
-```angular2html
-sudo apt install git
+### Настройка виртуального окружения:
+```commandline
+python -m venv venv
+venv\Scripts\Activate
 ```
-### Шаг 2. Добавление переменных GitHub Secrets
-**Необходимые переменные:**
-```angular2html
-SERVER_IP 
-SSH_KEY 
-SSH_USER
-ENV_FILE #Тут должны находится переменные окружения, которые определенны в файл .venv.example
+### Установка зависимостей проекта
+```commandline
+pip install -r requirements.txt
 ```
-### WorkFloy запускается при каждом push и pull_request. После всех этих настроек выполните коммит в репозиторий и этот проект успешно развернется на в виртуальной машине.
-### Ссылка именно на этот проект, который уже развернут на виртуальной машине, сразу на документацию: 
-### http://213.165.212.205:8000/redoc/
+### Настройка переменных окружения
+**Копируйте файл .env.example и заполните переменные окружения. Переименуйте файл в .env**
+### Применение миграций
+```commandline
+python manage.py migrate
+```
+### Запуск проекта
+```commandline
+python manage.py runserver
+```
